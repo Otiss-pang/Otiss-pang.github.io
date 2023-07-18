@@ -1,0 +1,190 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>RPC框架 | Hexo</title><meta name="author" content="John Doe"><meta name="copyright" content="John Doe"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="总体思路 RPC核心原理 客户端client：调用远程方法 客户端Stub：一个代理类，将客户端调用的方法、类、方法参数等信息传递到服务端。 网络传输：将调用的方法的信息比如说参数等传输到服务端，然后服务端执行完之后再把返回结果通过网络传输会客户端。网络传输方法有很多种，比如socket、Netty等。 服务端Stub：接收到客户端执行方法的请求后，取指定的方法然后返回结果给客户端的类。 服务端：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RPC框架">
+<meta property="og:url" content="http://example.com/2023/07/18/RPC%E6%A1%86%E6%9E%B6/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="总体思路 RPC核心原理 客户端client：调用远程方法 客户端Stub：一个代理类，将客户端调用的方法、类、方法参数等信息传递到服务端。 网络传输：将调用的方法的信息比如说参数等传输到服务端，然后服务端执行完之后再把返回结果通过网络传输会客户端。网络传输方法有很多种，比如socket、Netty等。 服务端Stub：接收到客户端执行方法的请求后，取指定的方法然后返回结果给客户端的类。 服务端：">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2023-07-18T03:20:42.000Z">
+<meta property="article:modified_time" content="2023-07-18T03:21:54.238Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/2023/07/18/RPC%E6%A1%86%E6%9E%B6/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'RPC框架',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-07-18 11:21:54'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><hr class="custom-hr"/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="Hexo"><span class="site-name">Hexo</span></a></span><div id="menus"><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">RPC框架</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2023-07-18T03:20:42.000Z" title="Created 2023-07-18 11:20:42">2023-07-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2023-07-18T03:21:54.238Z" title="Updated 2023-07-18 11:21:54">2023-07-18</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="RPC框架"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="总体思路"><a href="#总体思路" class="headerlink" title="总体思路"></a>总体思路</h2><p><img src="https://cdn.nlark.com/yuque/0/2022/png/27173335/1671951589953-ca3f6439-cef9-47a6-9a68-ad05fe63707a.png#averageHue=%23e0d6b5&clientId=u46b59a7a-8816-4&from=paste&height=217&id=u7155ae0f&originHeight=434&originWidth=651&originalType=binary&ratio=1&rotation=0&showTitle=false&size=144669&status=done&style=none&taskId=ube4b3a02-a9e4-4b27-8d63-87272b56838&title=&width=325.5" alt="image.png"><br><img src="https://cdn.nlark.com/yuque/0/2023/png/27173335/1684142091983-1450788c-0c0f-41ea-8a1d-9c878532261c.png#averageHue=%23bbbdbb&clientId=ua504fe87-708d-4&from=paste&height=442&id=ue65df48f&originHeight=317&originWidth=499&originalType=binary&ratio=2&rotation=0&showTitle=false&size=125335&status=done&style=none&taskId=u8bdb3084-ea05-49ef-87cc-63093b7bc93&title=&width=695.5" alt="image.png"></p>
+<h2 id="RPC核心原理"><a href="#RPC核心原理" class="headerlink" title="RPC核心原理"></a>RPC核心原理</h2><ol>
+<li><strong>客户端client：</strong>调用远程方法</li>
+<li><strong>客户端Stub：</strong>一个代理类，将客户端调用的方法、类、方法参数等信息传递到服务端。</li>
+<li><strong>网络传输：</strong>将调用的方法的信息比如说参数等传输到服务端，然后服务端执行完之后再把返回结果通过网络传输会客户端。网络传输方法有很多种，比如socket、Netty等。</li>
+<li><strong>服务端Stub：</strong>接收到客户端执行方法的请求后，取指定的方法然后返回结果给客户端的类。</li>
+<li><strong>服务端：</strong>提供远程方法的一端。</li>
+</ol>
+<h2 id="常见RPC框架"><a href="#常见RPC框架" class="headerlink" title="常见RPC框架"></a>常见RPC框架</h2><p>Dubbo、Motan、gRPC、Thrift</p>
+<h2 id="如何设计一个RPC框架"><a href="#如何设计一个RPC框架" class="headerlink" title="如何设计一个RPC框架"></a>如何设计一个RPC框架</h2><p>一般情况下，RPC框架不仅要提供服务发现功能，还要提供负载均衡、容错等功能。<br><img src="https://cdn.nlark.com/yuque/0/2023/png/27173335/1684203027349-40074e7f-4bfd-4ae7-b104-2142684d7a71.png#averageHue=%23f7f6f5&clientId=u03fd5a25-8302-4&from=paste&height=243&id=ua67cbad0&originHeight=221&originWidth=521&originalType=binary&ratio=2.200000047683716&rotation=0&showTitle=false&size=52688&status=done&style=none&taskId=ubbeb2de1-7b5d-42b9-95c8-f1486b04acc&title=&width=571.8181762695312" alt="image.png"><br><strong>服务提供端Server向注册中心注册服务，服务消费者Client通过注册中心拿到服务相关信息，然后再通过网络请求服务提供端Server。</strong><br>下面是一个完整的RPC框架示意图：<br><img src="https://cdn.nlark.com/yuque/0/2023/png/27173335/1684203210877-2e756952-9aa2-4a6e-974d-fc3556fce683.png#averageHue=%23f6f5f4&clientId=u03fd5a25-8302-4&from=paste&height=212&id=u683a37fd&originHeight=321&originWidth=951&originalType=binary&ratio=2.200000047683716&rotation=0&showTitle=false&size=113955&status=done&style=none&taskId=u28df42a5-05bf-4079-9652-08d91219c28&title=&width=628.272705078125" alt="image.png"></p>
+<h3 id="注册中心"><a href="#注册中心" class="headerlink" title="注册中心"></a>注册中心</h3><p>可以使用Zookeeper、Nacos甚至是Redis。<br><strong>注册中心负责服务地址的注册和查找，相当于目录服务。</strong>服务端启动的时候将服务名称以及对应的地址（ip+port<br>）注册到注册中心，服务消费端根据服务名称找到对应的服务地址。有了服务地址之后，服务消费端就可以通过网络请求服务端了。<br><img src="https://cdn.nlark.com/yuque/0/2023/png/27173335/1684204176158-7c982ef5-a30e-45a7-b3bb-7729e3dea1a0.png#averageHue=%23f0f0f0&clientId=u03fd5a25-8302-4&from=paste&height=281&id=u835a40bf&originHeight=618&originWidth=1924&originalType=binary&ratio=2.200000047683716&rotation=0&showTitle=false&size=211692&status=done&style=none&taskId=u09930839-464b-4298-be8a-86439413c84&title=&width=874.5454355901927" alt="image.png"></p>
+<h3 id="网络传输"><a href="#网络传输" class="headerlink" title="网络传输"></a>网络传输</h3><p>发送网络请求来传递目标类和方法的信息以及方法的参数等数据到服务提供端。<br>网络传输的具体实现可以使用<strong>Socket</strong>（阻塞IO、性能低并且功能单一）、<strong>Netty</strong>。<br>Netty是一个基于NIO的client-server框架，使用它可以快速开发网络应用程序。</p>
+<h3 id="序列化和反序列化"><a href="#序列化和反序列化" class="headerlink" title="序列化和反序列化"></a>序列化和反序列化</h3><p>因为在网络传输数据必须是二进制的。Java对象没办法直接在网络中传输。<br>为了能让Java对象在网络中传输，需要将其<strong>序列化</strong>为二进制的数据。最终需要的还是Java对象，因此还需要把二进制的数据“解析”为目标Java对象，也就是对二进制数据进行一次<strong>反序列化</strong>。<br>不仅网络传输的时候需要序列化和反序列化，将对象存储到文件、数据库等场景都需要用到序列化和反序列化。<br>常用的序列化有<strong>hessian</strong>、<strong>kryo</strong>、<strong>protostuff。</strong><br><img src="https://cdn.nlark.com/yuque/0/2023/png/27173335/1684205204127-ef2aa982-f3f1-47bb-a00e-b797d218d33b.png#averageHue=%23fefefe&clientId=u03fd5a25-8302-4&from=paste&height=272&id=ue55f51df&originHeight=266&originWidth=664&originalType=binary&ratio=2.200000047683716&rotation=0&showTitle=false&size=19477&status=done&style=none&taskId=uc2d9f83c-a6b4-41ea-8cd4-b0c4e7a2fb8&title=&width=679.8181762695312" alt="image.png"></p>
+<h3 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h3><p>使用动态代理来屏蔽远程方法调用的底层细节。简单来说，在调用远程方法的时候，实际会通过代理对象来传输网络请求。</p>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>负载均衡为了避免单个服务器响应同一个请求，容易造成服务器宕机、崩溃等问题。</p>
+<h3 id="传输协议"><a href="#传输协议" class="headerlink" title="传输协议"></a>传输协议</h3><p>设计一个私有的RPC协议，定义需要传输那些类型的数据，并且还会规定每一种类型的数据应该占多少字节。这样我们在接收到二进制数据之后，就可以正确的解析出我们需要的数据。</p>
+<h2 id="序列化协议对应与TCP-IP哪一层"><a href="#序列化协议对应与TCP-IP哪一层" class="headerlink" title="序列化协议对应与TCP&#x2F;IP哪一层"></a>序列化协议对应与TCP&#x2F;IP哪一层</h2><p>在OSI七层协议中，序列化和反序列化是表示层的工作，相对在TCP&#x2F;IP中，就是对用于<strong>应用层</strong>的一部分。</p>
+<h2 id="Socket网络通信"><a href="#Socket网络通信" class="headerlink" title="Socket网络通信"></a>Socket网络通信</h2><p>Socket网络通信过程如下：<br><img src="https://cdn.nlark.com/yuque/0/2023/png/27173335/1684221896835-35057f9d-53b8-45dd-87c9-08c4eae523a7.png#averageHue=%23fbfaa9&clientId=u03fd5a25-8302-4&from=paste&height=494&id=u8552768b&originHeight=550&originWidth=700&originalType=binary&ratio=2.200000047683716&rotation=0&showTitle=false&size=75326&status=done&style=none&taskId=u140f065a-8003-4432-ba64-52db22de767&title=&width=629.1817932128906" alt="image.png"><br>Socket网络通信步骤如下：</p>
+<ol>
+<li>建立服务端并且监听客户端请求</li>
+<li>客户端请求，服务端和客户端建立连接</li>
+<li>两端之间可以传递数据</li>
+<li>关闭资源</li>
+</ol>
+<p><img src="https://cdn.nlark.com/yuque/0/2023/png/27173335/1684223057382-0658e3f0-019c-47a1-853b-c257c48f04d5.png#averageHue=%23f3f3f3&clientId=u03fd5a25-8302-4&from=paste&height=516&id=ueb7add8c&originHeight=1136&originWidth=1348&originalType=binary&ratio=2.200000047683716&rotation=0&showTitle=false&size=220211&status=done&style=none&taskId=u2e2a4f04-c329-4609-a456-4e44ac00f82&title=&width=612.727259446767" alt="image.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="http://example.com">John Doe</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/2023/07/18/RPC%E6%A1%86%E6%9E%B6/">http://example.com/2023/07/18/RPC%E6%A1%86%E6%9E%B6/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Java/">Java</a></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/07/18/JVM/" title="JVM"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">JVM</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2023/07/18/JVM/" title="JVM"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-18</div><div class="title">JVM</div></div></a></div><div><a href="/2023/07/17/Redis/" title="Redis学习总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-17</div><div class="title">Redis学习总结</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">John Doe</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E4%BD%93%E6%80%9D%E8%B7%AF"><span class="toc-number">1.</span> <span class="toc-text">总体思路</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RPC%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">RPC核心原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81RPC%E6%A1%86%E6%9E%B6"><span class="toc-number">3.</span> <span class="toc-text">常见RPC框架</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E4%B8%80%E4%B8%AARPC%E6%A1%86%E6%9E%B6"><span class="toc-number">4.</span> <span class="toc-text">如何设计一个RPC框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">4.1.</span> <span class="toc-text">注册中心</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93"><span class="toc-number">4.2.</span> <span class="toc-text">网络传输</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">4.3.</span> <span class="toc-text">序列化和反序列化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="toc-number">4.4.</span> <span class="toc-text">动态代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-number">4.5.</span> <span class="toc-text">负载均衡</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE"><span class="toc-number">4.6.</span> <span class="toc-text">传输协议</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96%E5%8D%8F%E8%AE%AE%E5%AF%B9%E5%BA%94%E4%B8%8ETCP-IP%E5%93%AA%E4%B8%80%E5%B1%82"><span class="toc-number">5.</span> <span class="toc-text">序列化协议对应与TCP&#x2F;IP哪一层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Socket%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1"><span class="toc-number">6.</span> <span class="toc-text">Socket网络通信</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/18/RPC%E6%A1%86%E6%9E%B6/" title="RPC框架">RPC框架</a><time datetime="2023-07-18T03:20:42.000Z" title="Created 2023-07-18 11:20:42">2023-07-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/18/JVM/" title="JVM">JVM</a><time datetime="2023-07-18T03:08:10.000Z" title="Created 2023-07-18 11:08:10">2023-07-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/17/Redis/" title="Redis学习总结">Redis学习总结</a><time datetime="2023-07-17T14:21:17.000Z" title="Created 2023-07-17 22:21:17">2023-07-17</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/07/17/hello-world/" title="Hello World">Hello World</a><time datetime="2023-07-17T14:18:45.527Z" title="Created 2023-07-17 22:18:45">2023-07-17</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2023 By John Doe</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
